@@ -1,0 +1,47 @@
+#此工作流将在创建发行版时构建node.js应用程序并将其推送到Azure Web应用程序。
+#
+#此工作流假定您已经创建了目标Azure AppService Web应用程序。
+#有关说明，请参阅https://docs.microsoft.com/azure/app-service/app-service-plan-manage#create-an-app-service-plan
+#
+#以配置此工作流：
+#
+#1。在您的存储库中设置一个名为Azure_webapp_public_profile的秘密，其值为
+有关获取发布配置文件的说明，请参阅：https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
+#
+#2。更改Azure_webapp_name的值，Azure_webapp_Package_path和node_version环境变量(如下)。
+#
+有关Azure的GitHub操作的更多信息，请参阅https://github.com/Azure/Actions
+#获取更多示例，以便开始使用GitHubAction工作流部署到Azure，参考https://github.com/Azure/actions-workflow-samples
+on：
+发行版：
+类型：[Created]
+
+ env：
+ Azure_webapp_name：您的应用程序名#将此设置为应用程序的名称
+ Azure_webapp_Package_path：‘.’#将此设置为web应用程序项目的路径，默认为存储库根
+节点_version：‘10.x’#将此设置为使用
+
+作业：
+构建和部署：
+名称：构建和部署
+运行-on：Ubuntu-最新
+步骤：
+-使用操作/签出@v2
+-name：use Node.js${{env.NODE_version}}
+使用：action/set-ode@v1
+具有：
+节点-版本：${env.node_version}}
+-名称：NPM安装，构建和测试
+运行：
+
+构建和测试项目，然后
+#部署到Azure Web应用程序
+ NPM安装
+ NPM运行构建-如果-现在npm运行测试-如果-现在
+-名称：‘部署到Azure webapp’
+使用：Azure/webapp-部署@v2
+与：
+应用程序名称：${{env.AZURE_webapp_name}}
+发布-配置文件：${{Incres.AZURE_webapp_Publisation_发布${env.AZURE_webapp_name}}
+发布_profile}}
+包：${env.AZURE_webapp_Package_PATH}
